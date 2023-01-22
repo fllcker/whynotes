@@ -13,8 +13,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ForbiddenExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity<Object> handleAccessDeniedException(
-            Exception ex, WebRequest request) {
-        return new ResponseEntity<Object>(
+            Exception ignoredEx, WebRequest ignoredRequest) {
+        return new ResponseEntity<>(
                 "Access denied", new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 }
