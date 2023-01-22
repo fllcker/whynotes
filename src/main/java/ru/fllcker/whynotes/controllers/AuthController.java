@@ -21,4 +21,10 @@ public class AuthController {
         JwtResponse tokens = authService.login(jwtRequest);
         return ResponseEntity.ok(tokens);
     }
+
+    @PostMapping("signup")
+    public ResponseEntity<JwtResponse> signup(@RequestBody JwtRequest jwtRequest) throws Exception {
+        JwtResponse tokens = authService.signup(jwtRequest);
+        return ResponseEntity.ok(tokens);
+    }
 }
