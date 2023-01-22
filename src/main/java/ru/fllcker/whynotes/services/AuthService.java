@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import ru.fllcker.whynotes.dto.SignUpDto;
 import ru.fllcker.whynotes.models.User;
 import ru.fllcker.whynotes.security.JwtAuthentication;
 import ru.fllcker.whynotes.security.JwtRequest;
@@ -29,11 +30,11 @@ public class AuthService {
         return new JwtResponse(accessToken);
     }
 
-    public JwtResponse signup(JwtRequest jwtRequest) {
-        if (usersService.existsByEmail(jwtRequest.getEmail()).orElse(true))
+    public JwtResponse signup(SignUpDto dto) {
+        if (usersService.existsByEmail(dto.getEmail()).orElse(true))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this email already exists!");
 
-        User user = new User(jwtRequest.getEmail(), encoder.encode(jwtRequest.getPassword()));
+        User user = new User(dto.getEmail(), encoder.encode(dto.getPassword()), dto.getName());
         usersService.create(user);
 
         String accessToken = jwtProvider.generateAccessToken(user);

@@ -30,6 +30,10 @@ public class User {
     @Column(name = "password")
     private String passwordHashed;
 
+    @NonNull
+    @Column(name = "name")
+    private String name;
+
     @OneToMany(mappedBy = "owner")
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Note> notes;
