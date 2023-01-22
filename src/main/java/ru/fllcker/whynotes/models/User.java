@@ -37,4 +37,8 @@ public class User {
     @OneToMany(mappedBy = "owner")
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Note> notes;
+
+    @OneToMany(mappedBy = "owner")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<Reminder> reminders;
 }

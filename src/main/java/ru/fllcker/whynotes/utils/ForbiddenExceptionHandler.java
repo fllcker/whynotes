@@ -1,4 +1,4 @@
-package ru.fllcker.whynotes.controllers;
+package ru.fllcker.whynotes.utils;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

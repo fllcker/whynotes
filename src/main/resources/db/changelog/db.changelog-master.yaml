@@ -1,5 +1,5 @@
 databaseChangeLog:
-  - include: 
+  - include:
       file: db/changelog/changeset/adduser.yaml
   - include:
       file: db/changelog/changeset/addnote.yaml
