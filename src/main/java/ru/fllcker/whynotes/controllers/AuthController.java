@@ -1,5 +1,7 @@
 package ru.fllcker.whynotes.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,16 +20,19 @@ import ru.fllcker.whynotes.services.AuthService;
 @RestController
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Controller for auth")
 public class AuthController {
     private final AuthService authService;
 
     @PostMapping("login")
+    @Operation(summary = "login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest jwtRequest) {
         JwtResponse tokens = authService.login(jwtRequest);
         return ResponseEntity.ok(tokens);
     }
 
     @PostMapping("signup")
+    @Operation(summary = "signup")
     public ResponseEntity<JwtResponse> signup(@RequestBody @Valid SignUpDto dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
