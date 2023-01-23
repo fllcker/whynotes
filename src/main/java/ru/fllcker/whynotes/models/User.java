@@ -1,5 +1,6 @@
 package ru.fllcker.whynotes.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -35,10 +36,12 @@ public class User {
     private String name;
 
     @OneToMany(mappedBy = "owner")
+    @JsonBackReference
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Note> notes;
 
     @OneToMany(mappedBy = "owner")
+    @JsonBackReference
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Reminder> reminders;
 }

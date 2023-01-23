@@ -1,5 +1,7 @@
 package ru.fllcker.whynotes.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
@@ -22,10 +24,12 @@ public class Note {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JsonManagedReference
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private User owner;
 
     @OneToMany(mappedBy = "note")
+    @JsonBackReference
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Reminder> reminders;
 
