@@ -20,11 +20,18 @@ public class Reminder {
     @Column(name = "start_time")
     private Long startTime;
 
-    @NonNull
     @Column(name = "interval_time")
     private Long intervalTime;
 
-    private boolean isActivated = true;
+    @NonNull
+    @Column(name = "next_time")
+    private Long nextTime;
+
+    @Column(name = "is_expired")
+    private boolean expired = false;
+
+    @Column(name = "is_activated")
+    private boolean activated = true;
 
     @ManyToOne
     @JoinColumn(name = "note_id", referencedColumnName = "id")
