@@ -40,4 +40,17 @@ public class NotesService {
         notesRepository.save(note);
         return note;
     }
+
+    public void delete(String accessEmail, int noteId) {
+        Note note = notesRepository.findById(noteId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found!"));
+
+        User user = usersService.findByEmail(accessEmail)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+
+        if (note.getOwner().getId() != user.getId())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No access to this note!");
+
+        notesRepository.delete(note);
+    }
 }

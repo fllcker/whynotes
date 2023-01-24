@@ -39,4 +39,11 @@ public class NotesController {
 
         return ResponseEntity.ok(note);
     }
+
+    @GetMapping("delete/{id}")
+    public ResponseEntity<String> deleteNote(@PathVariable Integer id) {
+        JwtAuthentication authentication = authService.getAuthInfo();
+        notesService.delete(authentication.getEmail(), id);
+        return ResponseEntity.ok("Ok");
+    }
 }

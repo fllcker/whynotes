@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 
@@ -37,16 +36,13 @@ public class User {
 
     @OneToMany(mappedBy = "owner")
     @JsonBackReference
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Note> notes;
 
     @OneToMany(mappedBy = "owner")
     @JsonBackReference
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Reminder> reminders;
 
     @OneToMany(mappedBy = "owner")
     @JsonBackReference
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Reaction> reactions;
 }
