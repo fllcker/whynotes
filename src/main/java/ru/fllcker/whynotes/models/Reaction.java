@@ -1,26 +1,28 @@
 package ru.fllcker.whynotes.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
+import ru.fllcker.whynotes.utils.TimeUtils;
 
-import java.util.List;
-
-/**
- * @author github.com/fllcker
- */
 @Entity
-@Table(name = "notes")
-@Getter @Setter
+@Table(name = "reactions")
+@Getter
+@Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
-public class Note {
+public class Reaction {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @NonNull
+    @Column(name = "text")
+    private String text;
+
+    @Column(name = "created_at")
+    private Long createdAt;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
@@ -28,20 +30,14 @@ public class Note {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private User owner;
 
-    @OneToMany(mappedBy = "note")
-    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "note_id", referencedColumnName = "id")
+    @JsonManagedReference
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private List<Reminder> reminders;
+    private Note note;
 
-    @OneToMany(mappedBy = "note")
-    @JsonBackReference
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private List<Reaction> reactions;
-
-    @NonNull
-    @Column(name = "title")
-    private String title;
-
-    @NonNull
-    private String description;
+    public Reaction(@NonNull String text) {
+        this.text = text;
+        this.createdAt = TimeUtils.nowLong();
+    }
 }

@@ -44,4 +44,9 @@ public class User {
     @JsonBackReference
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Reminder> reminders;
+
+    @OneToMany(mappedBy = "owner")
+    @JsonBackReference
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<Reaction> reactions;
 }
