@@ -40,4 +40,8 @@ public class Note {
 
     @NonNull
     private String description;
+
+    @NonNull
+    @Column(name = "color")
+    private String color;
 }

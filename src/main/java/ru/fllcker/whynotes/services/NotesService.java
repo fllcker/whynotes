@@ -34,7 +34,7 @@ public class NotesService {
         User owner = usersService.findByEmail(accessEmail)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
 
-        Note note = new Note(dto.getTitle(), dto.getDescription());
+        Note note = new Note(dto.getTitle(), dto.getDescription(), dto.getColor());
 
         note.setOwner(owner);
         notesRepository.save(note);
