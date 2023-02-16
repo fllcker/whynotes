@@ -22,7 +22,6 @@ public class WhynotesApplication {
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOriginPatterns("*");
-                        //.allowedOrigins("http://localhost:3000");
             }
         };
     }
