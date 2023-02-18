@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.whynotes.dto.SignUpDto;
+import ru.fllcker.whynotes.models.Token;
 import ru.fllcker.whynotes.models.User;
+import ru.fllcker.whynotes.repositories.ITokensRepository;
 import ru.fllcker.whynotes.security.JwtAuthentication;
 import ru.fllcker.whynotes.security.JwtRequest;
 import ru.fllcker.whynotes.security.JwtResponse;
@@ -17,6 +19,7 @@ import ru.fllcker.whynotes.security.JwtResponse;
 @Transactional
 @RequiredArgsConstructor
 public class AuthService {
+    private final ITokensRepository tokensRepository;
     private final UsersService usersService;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder encoder;
@@ -28,8 +31,39 @@ public class AuthService {
         if (!encoder.matches(jwtRequest.getPassword(), user.getPasswordHashed()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong data");
 
-        String accessToken = jwtProvider.generateAccessToken(user);
-        return new JwtResponse(accessToken);
+        String accessToken = jwtProvider.generateToken(user, false);
+        String refreshToken = jwtProvider.generateToken(user, true);
+        tokensRepository.save(new Token(user, refreshToken));
+
+        return new JwtResponse(accessToken, refreshToken);
+    }
+
+    public JwtResponse getTokensByRefresh(String refreshToken, boolean refresh) {
+        String subject = jwtProvider.getRefreshClaims(refreshToken)
+                .getSubject();
+
+        if (!jwtProvider.validateRefreshToken(refreshToken))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        Token token = tokensRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+
+        if (!token.getToken().equals(refreshToken) || !token.getOwner().getEmail().equals(subject))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+
+        User user = usersService.findByEmail(subject)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+
+        String accessToken = jwtProvider.generateToken(user, false);
+        String newRefreshToken = null;
+
+        if (refresh) {
+            newRefreshToken = jwtProvider.generateToken(user, true);
+            tokensRepository.save(new Token(user, newRefreshToken));
+        }
+
+        return new JwtResponse(accessToken, newRefreshToken);
     }
 
     public JwtResponse signup(SignUpDto dto) {
@@ -39,8 +73,11 @@ public class AuthService {
         User user = new User(dto.getEmail(), encoder.encode(dto.getPassword()), dto.getName());
         usersService.create(user);
 
-        String accessToken = jwtProvider.generateAccessToken(user);
-        return new JwtResponse(accessToken);
+        String accessToken = jwtProvider.generateToken(user, false);
+        String refreshToken = jwtProvider.generateToken(user, true);
+        tokensRepository.save(new Token(user, refreshToken));
+
+        return new JwtResponse(accessToken, refreshToken);
     }
 
     public JwtAuthentication getAuthInfo() {

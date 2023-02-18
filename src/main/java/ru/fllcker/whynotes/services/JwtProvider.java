@@ -3,8 +3,6 @@ package ru.fllcker.whynotes.services;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.fllcker.whynotes.models.User;
@@ -29,20 +27,29 @@ public class JwtProvider {
         this.refreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshSecret));
     }
 
-    public String generateAccessToken(User user) {
-        final LocalDateTime now = LocalDateTime.now();
-        final Instant accessExpirationInstant = now.plusDays(7).atZone(ZoneId.systemDefault()).toInstant();
-        final Date accessExpiration = Date.from(accessExpirationInstant);
+    public String generateToken(User user, boolean refresh) {
+        LocalDateTime now = LocalDateTime.now();
+        Instant expirationInstant;
+
+        expirationInstant = refresh ?
+                now.plusDays(31).atZone(ZoneId.systemDefault()).toInstant() :
+                now.plusDays(7).atZone(ZoneId.systemDefault()).toInstant();
+
+        Date expiration = Date.from(expirationInstant);
         return Jwts.builder()
                 .setSubject(user.getEmail())
-                .setExpiration(accessExpiration)
-                .signWith(accessSecret)
+                .setExpiration(expiration)
+                .signWith(refresh ? refreshSecret : accessSecret)
                 .claim("email", user.getEmail())
                 .compact();
     }
 
     public boolean validateAccessToken(String accessToken) {
         return validateToken(accessToken, accessSecret);
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        return validateToken(refreshToken, refreshSecret);
     }
 
     private boolean validateToken(String token, Key secret) {
@@ -58,6 +65,10 @@ public class JwtProvider {
 
     public Claims getAccessClaims(String token) {
         return getClaims(token, accessSecret);
+    }
+
+    public Claims getRefreshClaims(String token) {
+        return getClaims(token, refreshSecret);
     }
 
     private Claims getClaims(String token, Key secret) {

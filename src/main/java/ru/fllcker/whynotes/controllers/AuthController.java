@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.whynotes.dto.SignUpDto;
 import ru.fllcker.whynotes.security.JwtRequest;
 import ru.fllcker.whynotes.security.JwtResponse;
+import ru.fllcker.whynotes.security.RefreshRequest;
 import ru.fllcker.whynotes.services.AuthService;
 
 @RestController
@@ -37,6 +38,18 @@ public class AuthController {
         if (bindingResult.hasErrors())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
         JwtResponse tokens = authService.signup(dto);
+        return ResponseEntity.ok(tokens);
+    }
+
+    @PostMapping("access")
+    public ResponseEntity<JwtResponse> getAccessToken(@RequestBody RefreshRequest request) {
+        JwtResponse tokens = authService.getTokensByRefresh(request.getRefreshToken(), false);
+        return ResponseEntity.ok(tokens);
+    }
+
+    @PostMapping("refresh")
+    public ResponseEntity<JwtResponse> getRefreshToken(@RequestBody RefreshRequest request) {
+        JwtResponse tokens = authService.getTokensByRefresh(request.getRefreshToken(), true);
         return ResponseEntity.ok(tokens);
     }
 }

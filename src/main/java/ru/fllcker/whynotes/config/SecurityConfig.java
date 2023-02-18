@@ -23,14 +23,13 @@ public class SecurityConfig {
         return http
                 .httpBasic().disable()
                 .csrf().disable()
-                .cors().and() // test
+                .cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers(
-                                        "/api/auth/login",
-                                        "/api/auth/signup",
+                                        "/api/auth/**",
                                         "/swagger",
                                         "/swagger-ui",
                                         "/swagger-ui/index.html").permitAll()

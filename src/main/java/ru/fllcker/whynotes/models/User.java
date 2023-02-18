@@ -36,6 +36,10 @@ public class User {
 
     @OneToMany(mappedBy = "owner")
     @JsonBackReference
+    private List<Token> tokens;
+
+    @OneToMany(mappedBy = "owner")
+    @JsonBackReference
     private List<Note> notes;
 
     @OneToMany(mappedBy = "owner")
